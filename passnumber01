@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebClass 出席パスワード生成ツール</title>
+  <style>
+    /* ===== リセット・基本設定 ===== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Meiryo", "Yu Gothic", "メイリオ", sans-serif;
+      background: #f4f6f9;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    /* ===== ページ全体のコンテナ ===== */
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    /* ===== ヘッダー ===== */
+    h1 {
+      font-size: 1.5rem;
+      color: #2c5282;
+      margin: 0 0 4px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #2c5282;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: #666;
+      margin: 0 0 20px;
+    }
+
+    /* ===== 設定パネル ===== */
+    .settings-panel {
+      background: #fff;
+      border: 1px solid #d1d9e6;
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+
+    .settings-panel h2 {
+      font-size: 1rem;
+      color: #2c5282;
+      margin: 0 0 14px;
+    }
+
+    /* グリッドレイアウト（入力欄） */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 20px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    /* 横幅いっぱいの項目 */
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #444;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      padding: 7px 10px;
+      border: 1px solid #bcc8d8;
+      border-radius: 5px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      background: #fafcff;
+      transition: border-color 0.15s;
+      width: 100%;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #2c5282;
+      background: #fff;
+    }
+
+    /* ===== ボタン共通 ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.05s;
+      user-select: none;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    /* 主要ボタン（生成） */
+    .btn-primary {
+      background: #2c5282;
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: #2a4a75;
+    }
+
+    /* サブボタン（再生成） */
+    .btn-secondary {
+      background: #fff;
+      color: #2c5282;
+      border: 2px solid #2c5282;
+    }
+    .btn-secondary:hover {
+      background: #eef2f8;
+    }
+
+    /* 緑ボタン（全件コピー・CSV） */
+    .btn-success {
+      background: #276749;
+      color: #fff;
+    }
+    .btn-success:hover {
+      background: #1e5038;
+    }
+
+    /* 小さいコピーボタン（各行） */
+    .btn-copy {
+      padding: 4px 12px;
+      font-size: 0.82rem;
+      background: #4a7fc1;
+      color: #fff;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.12s;
+      white-space: nowrap;
+    }
+    .btn-copy:hover {
+      background: #3567a8;
+    }
+    .btn-copy.copied {
+      background: #276749;
+    }
+
+    /* ===== 生成ボタンエリア ===== */
+    .action-row {
+      margin-top: 16px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    /* ===== 結果パネル ===== */
+    .result-panel {
+      background: #fff;
+      border: 1px solid #d1d9e6;
+      border-radius: 8px;
+      padding: 20px 24px;
+      display: none; /* 初期非表示 */
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .result-header h2 {
+      font-size: 1rem;
+      color: #2c5282;
+      margin: 0;
+    }
+
+    .result-meta {
+      font-size: 0.82rem;
+      color: #666;
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* ===== 一覧テーブル ===== */
+    .password-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    .password-table th {
+      background: #eef2f8;
+      color: #2c5282;
+      font-weight: bold;
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 2px solid #c5d2e8;
+    }
+
+    .password-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #e8ecf2;
+      vertical-align: middle;
+    }
+
+    .password-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .password-table tr:hover td {
+      background: #f7f9fc;
+    }
+
+    /* パスワード列：等幅フォント */
+    .pw-cell {
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 1.05rem;
+      font-weight: bold;
+      letter-spacing: 0.08em;
+      color: #1a365d;
+    }
+
+    /* コピーボタン列 */
+    .copy-cell {
+      text-align: right;
+      width: 90px;
+    }
+
+    /* ===== コピー通知トースト ===== */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #276749;
+      color: #fff;
+      padding: 9px 22px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s, transform 0.25s;
+      z-index: 9999;
+      white-space: nowrap;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ===== 件数バリデーションエラー ===== */
+    .error-msg {
+      color: #c0392b;
+      font-size: 0.83rem;
+      margin-top: 4px;
+      display: none;
+    }
+
+    /* ===== 空状態メッセージ ===== */
+    .empty-msg {
+      text-align: center;
+      color: #888;
+      padding: 28px 0;
+      font-size: 0.95rem;
+    }
+
+    /* ===== レスポンシブ ===== */
+    @media (max-width: 520px) {
+      .settings-grid {
+        grid-template-columns: 1fr;
+      }
+      .field.full {
+        grid-column: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>WebClass 出席パスワード生成ツール</h1>
+  <p class="subtitle">学期分のパスワードを一括生成して、WebClassの出席設定にコピー＆ペーストできます。</p>
+
+  <!-- ===== 設定パネル ===== -->
+  <div class="settings-panel">
+    <h2>生成条件の設定</h2>
+    <div class="settings-grid">
+
+      <!-- 授業名 -->
+      <div class="field">
+        <label for="className">授業名（任意）</label>
+        <input type="text" id="className" placeholder="例：民事執行法・保全法">
+      </div>
+
+      <!-- 年度・学期 -->
+      <div class="field">
+        <label for="termName">年度・学期（任意）</label>
+        <input type="text" id="termName" placeholder="例：2026年度 前期">
+      </div>
+
+      <!-- 回数 -->
+      <div class="field">
+        <label for="sessionCount">回数</label>
+        <input type="number" id="sessionCount" value="30" min="1" max="200">
+        <span class="error-msg" id="countError">1〜200 の範囲で入力してください。</span>
+      </div>
+
+      <!-- 桁数 -->
+      <div class="field">
+        <label for="digitCount">桁数</label>
+        <select id="digitCount">
+          <option value="4">4桁</option>
+          <option value="5">5桁</option>
+          <option value="6">6桁</option>
+          <option value="7">7桁</option>
+          <option value="8">8桁</option>
+        </select>
+      </div>
+
+      <!-- 文字種 -->
+      <div class="field">
+        <label for="charType">文字種</label>
+        <select id="charType">
+          <option value="digits">数字のみ（0–9）</option>
+          <option value="alphanumeric">英数字混在（a–z, 0–9）</option>
+        </select>
+      </div>
+
+    </div><!-- /settings-grid -->
+
+    <!-- 生成・再生成ボタン -->
+    <div class="action-row">
+      <button class="btn btn-primary" id="generateBtn" onclick="generate()">
+        ▶ パスワード生成
+      </button>
+      <button class="btn btn-secondary" id="regenBtn" onclick="regenerate()" style="display:none;">
+        ↺ 再生成（同じ条件で）
+      </button>
+    </div>
+
+  </div><!-- /settings-panel -->
+
+  <!-- ===== 結果パネル ===== -->
+  <div class="result-panel" id="resultPanel">
+
+    <div class="result-header">
+      <div>
+        <h2>生成結果</h2>
+        <div class="result-meta" id="resultMeta"></div>
+      </div>
+      <div class="result-actions">
+        <button class="btn btn-success" onclick="copyAll()">📋 全件コピー</button>
+        <button class="btn btn-success" onclick="downloadCSV()">⬇ CSV ダウンロード</button>
+      </div>
+    </div>
+
+    <table class="password-table" id="passwordTable">
+      <thead>
+        <tr>
+          <th style="width:100px;">回次</th>
+          <th>パスワード</th>
+          <th style="width:90px;"></th>
+        </tr>
+      </thead>
+      <tbody id="passwordBody">
+        <!-- JavaScriptで生成 -->
+      </tbody>
+    </table>
+
+  </div><!-- /result-panel -->
+
+</div><!-- /container -->
+
+<!-- ===== コピー通知トースト ===== -->
+<div id="toast">コピーしました</div>
+
+<script>
+  // ===== グローバル変数 =====
+  let generatedData = []; // { session, password } の配列
+  let lastClassName  = "";
+  let lastTermName   = "";
+
+  // ===== パスワード生成のエントリーポイント =====
+  function generate() {
+    const className  = document.getElementById("className").value.trim();
+    const termName   = document.getElementById("termName").value.trim();
+    const countRaw   = parseInt(document.getElementById("sessionCount").value, 10);
+    const digits     = parseInt(document.getElementById("digitCount").value, 10);
+    const charType   = document.getElementById("charType").value;
+
+    const countError = document.getElementById("countError");
+    if (!countRaw || countRaw < 1 || countRaw > 200) {
+      countError.style.display = "block";
+      return;
+    }
+    countError.style.display = "none";
+
+    const maxCombinations = charType === "digits"
+      ? Math.pow(10, digits)
+      : Math.pow(36, digits);
+
+    if (countRaw > maxCombinations) {
+      alert(`桁数 ${digits} 桁では最大 ${maxCombinations} 件までしか重複なし生成できません。回数を減らすか桁数を増やしてください。`);
+      return;
+    }
+
+    const passwords = generateUniquePasswords(countRaw, digits, charType);
+
+    generatedData = passwords.map((pw, i) => ({
+      session: i + 1,
+      password: pw,
+    }));
+    lastClassName = className;
+    lastTermName  = termName;
+
+    renderResults();
+  }
+
+  function regenerate() {
+    generate();
+  }
+
+  function generateUniquePasswords(count, digits, charType) {
+    const results = new Set();
+    while (results.size < count) {
+      results.add(randomPassword(digits, charType));
+    }
+    return [...results];
+  }
+
+  function randomPassword(digits, charType) {
+    const chars = charType === "digits"
+      ? "0123456789"
+      : "abcdefghijklmnopqrstuvwxyz0123456789";
+    let pw = "";
+    for (let i = 0; i < digits; i++) {
+      pw += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return pw;
+  }
+
+  function renderResults() {
+    const tbody = document.getElementById("passwordBody");
+    tbody.innerHTML = "";
+
+    generatedData.forEach(item => {
+      const tr = document.createElement("tr");
+
+      const tdSession = document.createElement("td");
+      tdSession.textContent = `第 ${item.session} 回`;
+      tr.appendChild(tdSession);
+
+      const tdPw = document.createElement("td");
+      tdPw.className = "pw-cell";
+      tdPw.textContent = item.password;
+      tr.appendChild(tdPw);
+
+      const tdCopy = document.createElement("td");
+      tdCopy.className = "copy-cell";
+      const copyBtn = document.createElement("button");
+      copyBtn.className = "btn-copy";
+      copyBtn.textContent = "コピー";
+      copyBtn.addEventListener("click", () => copySingle(item.password, copyBtn));
+      tdCopy.appendChild(copyBtn);
+      tr.appendChild(tdCopy);
+
+      tbody.appendChild(tr);
+    });
+
+    const meta = [];
+    if (lastClassName) meta.push(lastClassName);
+    if (lastTermName)  meta.push(lastTermName);
+    meta.push(`${generatedData.length} 件`);
+    document.getElementById("resultMeta").textContent = meta.join(" ／ ");
+
+    document.getElementById("resultPanel").style.display = "block";
+    document.getElementById("regenBtn").style.display = "inline-flex";
+    document.getElementById("resultPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function copySingle(password, btn) {
+    writeClipboard(password, () => {
+      const originalText = btn.textContent;
+      btn.textContent = "✓ コピー済";
+      btn.classList.add("copied");
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.classList.remove("copied");
+      }, 1500);
+      showToast("コピーしました：" + password);
+    });
+  }
+
+  function copyAll() {
+    if (generatedData.length === 0) return;
+    const lines = generatedData.map(item =>
+      `第${item.session}回,${item.password}`
+    ).join("\n");
+    writeClipboard(lines, () => {
+      showToast(`全 ${generatedData.length} 件をコピーしました`);
+    });
+  }
+
+  function downloadCSV() {
+    if (generatedData.length === 0) return;
+    const BOM = "\uFEFF";
+    const headers = ["回次", "パスワード", "授業名", "年度・学期"];
+    const rows = generatedData.map(item => [
+      `第${item.session}回`,
+      item.password,
+      lastClassName,
+      lastTermName,
+    ]);
+    const csvContent = BOM + [headers, ...rows]
+      .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      .join("\r\n");
+
+    let filename = "webclass_passwords";
+    if (lastClassName)  filename += "_" + sanitizeFilename(lastClassName);
+    if (lastTermName)   filename += "_" + sanitizeFilename(lastTermName);
+    filename += ".csv";
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href     = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("CSVをダウンロードしました");
+  }
+
+  function writeClipboard(text, onSuccess) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(onSuccess).catch(() => {
+        fallbackCopy(text, onSuccess);
+      });
+    } else {
+      fallbackCopy(text, onSuccess);
+    }
+  }
+
+  function fallbackCopy(text, onSuccess) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.top = "-9999px";
+    ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try {
+      document.execCommand("copy");
+      onSuccess();
+    } catch (e) {
+      alert("コピーに失敗しました。手動でコピーしてください。");
+    }
+    document.body.removeChild(ta);
+  }
+
+  let toastTimer = null;
+  function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toast.classList.remove("show");
+    }, 2000);
+  }
+
+  function sanitizeFilename(str) {
+    return str.replace(/[\\/:*?"<>|\s]/g, "_").substring(0, 30);
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && document.activeElement.tagName !== "BUTTON") {
+      generate();
+    }
+  });
+</script>
+
+</body>
+</html>
