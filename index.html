@@ -19,7 +19,6 @@
       min-height: 100vh;
     }
 
-    /* ===== ページ全体のコンテナ ===== */
     .container {
       max-width: 780px;
       margin: 0 auto;
@@ -37,7 +36,54 @@
     .subtitle {
       font-size: 0.85rem;
       color: #666;
-      margin: 0 0 20px;
+      margin: 0 0 14px;
+    }
+
+    /* ===== IP制限案内バナー ===== */
+    .ip-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: #ebf4ff;
+      border: 1px solid #90cdf4;
+      border-left: 4px solid #3182ce;
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .ip-notice-icon {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* IPアドレス：クリックでコピー */
+    .ip-address {
+      display: inline-block;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 1rem;
+      font-weight: bold;
+      color: #1a365d;
+      background: #fff;
+      border: 1px solid #90cdf4;
+      border-radius: 4px;
+      padding: 1px 8px;
+      cursor: pointer;
+      transition: background 0.12s;
+      user-select: all;
+    }
+
+    .ip-address:hover {
+      background: #bee3f8;
+    }
+
+    .ip-copy-hint {
+      font-size: 0.78rem;
+      color: #4a90c4;
+      margin-left: 4px;
     }
 
     /* ===== 設定パネル ===== */
@@ -55,7 +101,6 @@
       margin: 0 0 14px;
     }
 
-    /* グリッドレイアウト（入力欄） */
     .settings-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -66,11 +111,6 @@
       display: flex;
       flex-direction: column;
       gap: 4px;
-    }
-
-    /* 横幅いっぱいの項目 */
-    .field.full {
-      grid-column: 1 / -1;
     }
 
     label {
@@ -116,39 +156,17 @@
       user-select: none;
     }
 
-    .btn:active {
-      transform: scale(0.97);
-    }
+    .btn:active { transform: scale(0.97); }
 
-    /* 主要ボタン（生成） */
-    .btn-primary {
-      background: #2c5282;
-      color: #fff;
-    }
-    .btn-primary:hover {
-      background: #2a4a75;
-    }
+    .btn-primary  { background: #2c5282; color: #fff; }
+    .btn-primary:hover  { background: #2a4a75; }
 
-    /* サブボタン（再生成） */
-    .btn-secondary {
-      background: #fff;
-      color: #2c5282;
-      border: 2px solid #2c5282;
-    }
-    .btn-secondary:hover {
-      background: #eef2f8;
-    }
+    .btn-secondary { background: #fff; color: #2c5282; border: 2px solid #2c5282; }
+    .btn-secondary:hover { background: #eef2f8; }
 
-    /* 緑ボタン（全件コピー・CSV） */
-    .btn-success {
-      background: #276749;
-      color: #fff;
-    }
-    .btn-success:hover {
-      background: #1e5038;
-    }
+    .btn-success  { background: #276749; color: #fff; }
+    .btn-success:hover  { background: #1e5038; }
 
-    /* 小さいコピーボタン（各行） */
     .btn-copy {
       padding: 4px 12px;
       font-size: 0.82rem;
@@ -160,14 +178,9 @@
       transition: background 0.12s;
       white-space: nowrap;
     }
-    .btn-copy:hover {
-      background: #3567a8;
-    }
-    .btn-copy.copied {
-      background: #276749;
-    }
+    .btn-copy:hover  { background: #3567a8; }
+    .btn-copy.copied { background: #276749; }
 
-    /* ===== 生成ボタンエリア ===== */
     .action-row {
       margin-top: 16px;
       display: flex;
@@ -182,7 +195,7 @@
       border: 1px solid #d1d9e6;
       border-radius: 8px;
       padding: 20px 24px;
-      display: none; /* 初期非表示 */
+      display: none;
     }
 
     .result-header {
@@ -212,8 +225,14 @@
     }
 
     /* ===== 一覧テーブル ===== */
+    .table-wrapper {
+      display: flex;
+      justify-content: center;
+    }
+
     .password-table {
-      width: 100%;
+      width: auto;
+      min-width: 340px;
       border-collapse: collapse;
       font-size: 0.95rem;
     }
@@ -233,15 +252,9 @@
       vertical-align: middle;
     }
 
-    .password-table tr:last-child td {
-      border-bottom: none;
-    }
+    .password-table tr:last-child td { border-bottom: none; }
+    .password-table tr:hover td { background: #f7f9fc; }
 
-    .password-table tr:hover td {
-      background: #f7f9fc;
-    }
-
-    /* パスワード列：等幅フォント */
     .pw-cell {
       font-family: "Consolas", "Courier New", monospace;
       font-size: 1.05rem;
@@ -250,13 +263,12 @@
       color: #1a365d;
     }
 
-    /* コピーボタン列 */
     .copy-cell {
       text-align: right;
       width: 90px;
     }
 
-    /* ===== コピー通知トースト ===== */
+    /* ===== トースト通知 ===== */
     #toast {
       position: fixed;
       bottom: 28px;
@@ -279,7 +291,7 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    /* ===== 件数バリデーションエラー ===== */
+    /* ===== バリデーションエラー ===== */
     .error-msg {
       color: #c0392b;
       font-size: 0.83rem;
@@ -287,22 +299,9 @@
       display: none;
     }
 
-    /* ===== 空状態メッセージ ===== */
-    .empty-msg {
-      text-align: center;
-      color: #888;
-      padding: 28px 0;
-      font-size: 0.95rem;
-    }
-
     /* ===== レスポンシブ ===== */
     @media (max-width: 520px) {
-      .settings-grid {
-        grid-template-columns: 1fr;
-      }
-      .field.full {
-        grid-column: 1;
-      }
+      .settings-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -313,31 +312,38 @@
   <h1>WebClass 出席パスワード生成ツール</h1>
   <p class="subtitle">学期分のパスワードを一括生成して、WebClassの出席設定にコピー＆ペーストできます。</p>
 
+  <!-- ===== IP制限案内バナー ===== -->
+  <div class="ip-notice">
+    <span class="ip-notice-icon">🔒</span>
+    <span>
+      出席を<strong>学内からのアクセスに制限</strong>するには、WebClass の <strong>IPアドレス制限</strong> 欄に
+      <code class="ip-address" onclick="copyIP()" title="クリックでコピー">202.241.124.16</code>
+      を入力してください。
+      <span class="ip-copy-hint">（アドレスをクリックするとコピーできます）</span>
+    </span>
+  </div>
+
   <!-- ===== 設定パネル ===== -->
   <div class="settings-panel">
     <h2>生成条件の設定</h2>
     <div class="settings-grid">
 
-      <!-- 授業名 -->
       <div class="field">
         <label for="className">授業名（任意）</label>
         <input type="text" id="className" placeholder="例：民事執行法・保全法">
       </div>
 
-      <!-- 年度・学期 -->
       <div class="field">
         <label for="termName">年度・学期（任意）</label>
         <input type="text" id="termName" placeholder="例：2026年度 前期">
       </div>
 
-      <!-- 回数 -->
       <div class="field">
         <label for="sessionCount">回数</label>
         <input type="number" id="sessionCount" value="30" min="1" max="200">
         <span class="error-msg" id="countError">1〜200 の範囲で入力してください。</span>
       </div>
 
-      <!-- 桁数 -->
       <div class="field">
         <label for="digitCount">桁数</label>
         <select id="digitCount">
@@ -349,7 +355,6 @@
         </select>
       </div>
 
-      <!-- 文字種 -->
       <div class="field">
         <label for="charType">文字種</label>
         <select id="charType">
@@ -360,12 +365,11 @@
 
     </div><!-- /settings-grid -->
 
-    <!-- 生成・再生成ボタン -->
     <div class="action-row">
       <button class="btn btn-primary" id="generateBtn" onclick="generate()">
         ▶ パスワード生成
       </button>
-      <button class="btn btn-secondary" id="regenBtn" onclick="regenerate()" style="display:none;">
+      <button class="btn btn-secondary" id="regenBtn" onclick="generate()" style="display:none;">
         ↺ 再生成（同じ条件で）
       </button>
     </div>
@@ -386,39 +390,38 @@
       </div>
     </div>
 
-    <table class="password-table" id="passwordTable">
-      <thead>
-        <tr>
-          <th style="width:100px;">回次</th>
-          <th>パスワード</th>
-          <th style="width:90px;"></th>
-        </tr>
-      </thead>
-      <tbody id="passwordBody">
-        <!-- JavaScriptで生成 -->
-      </tbody>
-    </table>
+    <div class="table-wrapper">
+      <table class="password-table">
+        <thead>
+          <tr>
+            <th style="width:100px;">回次</th>
+            <th style="width:140px;">パスワード</th>
+            <th style="width:90px;"></th>
+          </tr>
+        </thead>
+        <tbody id="passwordBody"></tbody>
+      </table>
+    </div>
 
   </div><!-- /result-panel -->
 
 </div><!-- /container -->
 
-<!-- ===== コピー通知トースト ===== -->
 <div id="toast">コピーしました</div>
 
 <script>
   // ===== グローバル変数 =====
-  let generatedData = []; // { session, password } の配列
-  let lastClassName  = "";
-  let lastTermName   = "";
+  let generatedData = [];
+  let lastClassName = "";
+  let lastTermName  = "";
 
-  // ===== パスワード生成のエントリーポイント =====
+  // ===== パスワード一括生成 =====
   function generate() {
-    const className  = document.getElementById("className").value.trim();
-    const termName   = document.getElementById("termName").value.trim();
-    const countRaw   = parseInt(document.getElementById("sessionCount").value, 10);
-    const digits     = parseInt(document.getElementById("digitCount").value, 10);
-    const charType   = document.getElementById("charType").value;
+    const className = document.getElementById("className").value.trim();
+    const termName  = document.getElementById("termName").value.trim();
+    const countRaw  = parseInt(document.getElementById("sessionCount").value, 10);
+    const digits    = parseInt(document.getElementById("digitCount").value, 10);
+    const charType  = document.getElementById("charType").value;
 
     const countError = document.getElementById("countError");
     if (!countRaw || countRaw < 1 || countRaw > 200) {
@@ -427,6 +430,7 @@
     }
     countError.style.display = "none";
 
+    // 重複なし生成可能数チェック
     const maxCombinations = charType === "digits"
       ? Math.pow(10, digits)
       : Math.pow(36, digits);
@@ -436,30 +440,20 @@
       return;
     }
 
-    const passwords = generateUniquePasswords(countRaw, digits, charType);
+    // 重複なしパスワードをSet で生成
+    const set = new Set();
+    while (set.size < countRaw) {
+      set.add(randomPassword(digits, charType));
+    }
 
-    generatedData = passwords.map((pw, i) => ({
-      session: i + 1,
-      password: pw,
-    }));
+    generatedData = [...set].map((pw, i) => ({ session: i + 1, password: pw }));
     lastClassName = className;
     lastTermName  = termName;
 
     renderResults();
   }
 
-  function regenerate() {
-    generate();
-  }
-
-  function generateUniquePasswords(count, digits, charType) {
-    const results = new Set();
-    while (results.size < count) {
-      results.add(randomPassword(digits, charType));
-    }
-    return [...results];
-  }
-
+  // ===== 1件のランダムパスワード生成 =====
   function randomPassword(digits, charType) {
     const chars = charType === "digits"
       ? "0123456789"
@@ -471,6 +465,7 @@
     return pw;
   }
 
+  // ===== 結果をテーブルに描画 =====
   function renderResults() {
     const tbody = document.getElementById("passwordBody");
     tbody.innerHTML = "";
@@ -478,9 +473,9 @@
     generatedData.forEach(item => {
       const tr = document.createElement("tr");
 
-      const tdSession = document.createElement("td");
-      tdSession.textContent = `第 ${item.session} 回`;
-      tr.appendChild(tdSession);
+      const tdSess = document.createElement("td");
+      tdSess.textContent = `第 ${item.session} 回`;
+      tr.appendChild(tdSess);
 
       const tdPw = document.createElement("td");
       tdPw.className = "pw-cell";
@@ -489,16 +484,17 @@
 
       const tdCopy = document.createElement("td");
       tdCopy.className = "copy-cell";
-      const copyBtn = document.createElement("button");
-      copyBtn.className = "btn-copy";
-      copyBtn.textContent = "コピー";
-      copyBtn.addEventListener("click", () => copySingle(item.password, copyBtn));
-      tdCopy.appendChild(copyBtn);
+      const btn = document.createElement("button");
+      btn.className = "btn-copy";
+      btn.textContent = "コピー";
+      btn.addEventListener("click", () => copySingle(item.password, btn));
+      tdCopy.appendChild(btn);
       tr.appendChild(tdCopy);
 
       tbody.appendChild(tr);
     });
 
+    // メタ情報
     const meta = [];
     if (lastClassName) meta.push(lastClassName);
     if (lastTermName)  meta.push(lastTermName);
@@ -510,65 +506,68 @@
     document.getElementById("resultPanel").scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  // ===== 各行コピー =====
   function copySingle(password, btn) {
     writeClipboard(password, () => {
-      const originalText = btn.textContent;
+      const orig = btn.textContent;
       btn.textContent = "✓ コピー済";
       btn.classList.add("copied");
       setTimeout(() => {
-        btn.textContent = originalText;
+        btn.textContent = orig;
         btn.classList.remove("copied");
       }, 1500);
       showToast("コピーしました：" + password);
     });
   }
 
+  // ===== 全件コピー =====
   function copyAll() {
-    if (generatedData.length === 0) return;
-    const lines = generatedData.map(item =>
-      `第${item.session}回,${item.password}`
-    ).join("\n");
-    writeClipboard(lines, () => {
-      showToast(`全 ${generatedData.length} 件をコピーしました`);
-    });
+    if (!generatedData.length) return;
+    const text = generatedData.map(d => `第${d.session}回,${d.password}`).join("\n");
+    writeClipboard(text, () => showToast(`全 ${generatedData.length} 件をコピーしました`));
   }
 
+  // ===== IPアドレスコピー =====
+  function copyIP() {
+    const ip = "202.241.124.16";
+    writeClipboard(ip, () => showToast("IPアドレスをコピーしました：" + ip));
+  }
+
+  // ===== CSVダウンロード =====
   function downloadCSV() {
-    if (generatedData.length === 0) return;
-    const BOM = "\uFEFF";
+    if (!generatedData.length) return;
+
+    const BOM = "\uFEFF"; // Excelで文字化けしないようにBOM付きUTF-8
     const headers = ["回次", "パスワード", "授業名", "年度・学期"];
-    const rows = generatedData.map(item => [
-      `第${item.session}回`,
-      item.password,
-      lastClassName,
-      lastTermName,
+    const rows = generatedData.map(d => [
+      `第${d.session}回`, d.password, lastClassName, lastTermName
     ]);
-    const csvContent = BOM + [headers, ...rows]
-      .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+
+    const csv = BOM + [headers, ...rows]
+      .map(row => row.map(c => `"${String(c).replace(/"/g, '""')}"`).join(","))
       .join("\r\n");
 
     let filename = "webclass_passwords";
-    if (lastClassName)  filename += "_" + sanitizeFilename(lastClassName);
-    if (lastTermName)   filename += "_" + sanitizeFilename(lastTermName);
+    if (lastClassName) filename += "_" + sanitize(lastClassName);
+    if (lastTermName)  filename += "_" + sanitize(lastTermName);
     filename += ".csv";
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement("a");
-    a.href     = url;
-    a.download = filename;
+    a.href = url; a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+
     showToast("CSVをダウンロードしました");
   }
 
+  // ===== クリップボード書き込み =====
   function writeClipboard(text, onSuccess) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(onSuccess).catch(() => {
-        fallbackCopy(text, onSuccess);
-      });
+      navigator.clipboard.writeText(text).then(onSuccess).catch(() => fallbackCopy(text, onSuccess));
     } else {
       fallbackCopy(text, onSuccess);
     }
@@ -577,40 +576,32 @@
   function fallbackCopy(text, onSuccess) {
     const ta = document.createElement("textarea");
     ta.value = text;
-    ta.style.position = "fixed";
-    ta.style.top = "-9999px";
-    ta.style.left = "-9999px";
+    ta.style.cssText = "position:fixed;top:-9999px;left:-9999px";
     document.body.appendChild(ta);
-    ta.focus();
-    ta.select();
-    try {
-      document.execCommand("copy");
-      onSuccess();
-    } catch (e) {
-      alert("コピーに失敗しました。手動でコピーしてください。");
-    }
+    ta.focus(); ta.select();
+    try { document.execCommand("copy"); onSuccess(); }
+    catch { alert("コピーに失敗しました。手動でコピーしてください。"); }
     document.body.removeChild(ta);
   }
 
+  // ===== トースト表示 =====
   let toastTimer = null;
-  function showToast(message) {
-    const toast = document.getElementById("toast");
-    toast.textContent = message;
-    toast.classList.add("show");
+  function showToast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
     if (toastTimer) clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-      toast.classList.remove("show");
-    }, 2000);
+    toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
   }
 
-  function sanitizeFilename(str) {
+  // ===== ファイル名用サニタイズ =====
+  function sanitize(str) {
     return str.replace(/[\\/:*?"<>|\s]/g, "_").substring(0, 30);
   }
 
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && document.activeElement.tagName !== "BUTTON") {
-      generate();
-    }
+  // ===== Enterキーで生成 =====
+  document.addEventListener("keydown", e => {
+    if (e.key === "Enter" && document.activeElement.tagName !== "BUTTON") generate();
   });
 </script>
 
